@@ -8,6 +8,7 @@
 
 import UIKit
 import PushNotifications
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,10 +18,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let pushNotifications = PushNotifications.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions
-        launchOptions:[UIApplication.LaunchOptionsKey:Any]?) -> Bool {
+        launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.pushNotifications.start(instanceId: "cdaf9857-fad0-4bfb-b360-64c1b2693ef3")
         self.pushNotifications.registerForRemoteNotifications()
-        try? self.pushNotifications.subscribe(interest: "broadcast")
+        try? self.pushNotifications.addDeviceInterest(interest: "broadcast")
+
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playback, options: .allowBluetoothA2DP)
+            try audioSession.setActive(true)
+        } catch {
+            print("Failed to set audio session category")
+        }
 
         setupReachability()
 
